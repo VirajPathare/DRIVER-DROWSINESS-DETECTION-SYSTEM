@@ -27,23 +27,22 @@ The system continuously monitors the eye aspect ratio from a live webcam video s
 ## ⚙️ System Architecture & Project Flow
 
 ```text
-  [ Webcam Feed ]
-         │
-         ▼
-  [ Face & Eye Detection ] ──► (dlib 68 Facial Landmarks)
-         │
-         ▼
-  [ Compute EAR ] ──► (Eye Aspect Ratio)
-         │
-         ▼
-  [ Track EAR over continuous frames ]
-         │
-         ▼
-  [ Is EAR < Threshold for N frames? ]
-         │
-    ┌────┴────┐
-   Yes        No
-    │          │
-    ▼          ▼
-[ 🚨 Trigger  [ Continue 
-   Alarm ]      Monitoring ]
+[ Webcam Feed ]
+      │
+      ▼
+[ Face & Eye Detection ] ── (dlib 68 Landmarks)
+      │
+      ▼
+[ Compute EAR ] ── (Eye Aspect Ratio)
+      │
+      ▼
+[ Track EAR continuously over frames ]
+      │
+      ▼
+[ Is EAR < Threshold for N frames? ]
+      │
+ ┌────┴────┐
+Yes        No
+ │          │
+ ▼          ▼
+[🚨 Alarm]  [Continue Monitoring]
