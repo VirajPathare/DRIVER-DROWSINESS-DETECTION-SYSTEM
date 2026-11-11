@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="https://img.icons8.com/color/96/000000/car--v1.png" width="80" alt="Car Icon"/>
-  <h1>Driver Drowsiness Detection System</h1>
+  <h1>🚗 Driver Drowsiness Detection System</h1>
   <p><b>Real-Time Driver Safety & Computer Vision Solution</b></p>
 
   <!-- Badges -->
