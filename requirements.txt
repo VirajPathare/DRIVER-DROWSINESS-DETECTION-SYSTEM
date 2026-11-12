@@ -1,4 +1,5 @@
 opencv-python
-dlib
+mediapipe
 numpy
 scipy
+pytest
