@@ -2,8 +2,8 @@ import cv2
 import threading
 import tkinter as tk
 from tkinter import messagebox
-from alarm import play_alarm
-from detector import DrowsinessDetector
+from src.alarm import play_alarm
+from src.detector import DrowsinessDetector
 
 # --- Configuration ---
 EAR_THRESHOLD = 0.25
