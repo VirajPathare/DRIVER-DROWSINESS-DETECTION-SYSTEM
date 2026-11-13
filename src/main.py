@@ -2,13 +2,13 @@ import cv2
 import threading
 import tkinter as tk
 from tkinter import messagebox
-from src.alarm import play_alarm
-from src.detector import DrowsinessDetector
+from alarm import play_alarm
+from detector import DrowsinessDetector
 
 # --- Configuration ---
-EAR_THRESHOLD = 0.25
-MAR_THRESHOLD = 0.6
-CONSEC_FRAMES = 20
+EAR_THRESHOLD = 0.25   # If EAR drops below this, eyes are closed
+MAR_THRESHOLD = 0.60   # If MAR goes above this, yawning
+CONSEC_FRAMES = 20     # Number of frames (approx 1 second) before alarm
 
 def start_detection():
     detector = DrowsinessDetector()
@@ -22,35 +22,55 @@ def start_detection():
     yawn_counter = 0
     alarm_on = False
 
+    print("Camera started! Press 'q' in the video window to quit.")
+
     while True:
         ret, frame = cap.read()
-        if not ret:
-            break
+        if not ret or frame is None:
+            continue
 
+        # Flip the frame so it acts like a mirror
+        frame = cv2.flip(frame, 1)
         frame = cv2.resize(frame, (640, 480))
-        ear, mar, landmarks = detector.process_frame(frame)
+        
+        try:
+            ear, mar, landmarks = detector.process_frame(frame)
+        except Exception:
+            continue
 
         if ear is not None and mar is not None:
+            # Print numbers to terminal so you can see the math working
+            print(f"EAR: {ear:.2f} | MAR: {mar:.2f}")
+
+            # Show numbers on the video feed
+            cv2.putText(frame, f"EAR: {ear:.2f}", (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+            cv2.putText(frame, f"MAR: {mar:.2f}", (500, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+
+            # 1. Eye Logic
             if ear < EAR_THRESHOLD:
                 counter += 1
             else:
                 counter = 0
 
+            # 2. Yawn Logic
             if mar > MAR_THRESHOLD:
                 yawn_counter += 1
             else:
                 yawn_counter = 0
 
+            # 3. Trigger Alarm
             if counter >= CONSEC_FRAMES or yawn_counter >= CONSEC_FRAMES:
-                cv2.putText(frame, "DROWSINESS ALERT!", (50, 50),
+                cv2.putText(frame, "DROWSINESS ALERT!", (50, 100),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+                
                 if not alarm_on:
+                    print(">>> ALARM TRIGGERED! <<<")
                     threading.Thread(target=play_alarm, daemon=True).start()
                     alarm_on = True
             else:
                 alarm_on = False
 
-            # Draw landmarks
+            # Draw the dots
             left_eye, right_eye, mouth = landmarks
             for pt in left_eye + right_eye:
                 cv2.circle(frame, pt, 2, (0, 255, 0), -1)
